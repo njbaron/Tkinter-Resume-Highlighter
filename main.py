@@ -1,15 +1,26 @@
+import json
 import tkinter as tk
 from tkinter import ttk
-import json
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 
-RADIO_BUTTON_NAMES = ["name", "address", "email", "job title", "company name", "work start date", "work end date", "degree", "school", "edu start date", "edu end date"]
+RADIO_BUTTON_NAMES = [
+    "name",
+    "address",
+    "email",
+    "job title",
+    "company name",
+    "work start date",
+    "work end date",
+    "degree",
+    "school",
+    "edu start date",
+    "edu end date",
+]
+
 
 def open_file():
     """Open a file for editing."""
-    filepath = askopenfilename(
-        filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")]
-    )
+    filepath = askopenfilename(filetypes=[("Text Files", "*.txt"), ("All Files", "*.*")])
     if not filepath:
         return
     txt_edit.delete("1.0", tk.END)
@@ -19,6 +30,7 @@ def open_file():
         txt_edit.insert(tk.END, text)
         enable_text_edit()
     window.title(f"Resume Element Selector - {filepath}")
+
 
 def save_file():
     """Save the current file as a new file."""
@@ -33,6 +45,7 @@ def save_file():
         output_file.write(text)
     window.title(f"Resume Element Selector - {filepath}")
 
+
 def process_radio():
     try:
         selected_text = txt_edit.selection_get()
@@ -41,9 +54,10 @@ def process_radio():
 
     current_radio_selected = selected_radio.get()
     if selected_text:
-        text_fields[current_radio_selected].delete("1.0","end")
+        text_fields[current_radio_selected].delete("1.0", "end")
         text_fields[current_radio_selected].insert(tk.END, selected_text)
         txt_edit.tag_remove(tk.SEL, "1.0", tk.END)
+
 
 def parse_to_json(*args, **kwargs):
     text_dict = {}
@@ -55,15 +69,17 @@ def parse_to_json(*args, **kwargs):
     result_text.insert(tk.END, json.dumps(text_dict, indent=4))
     result_text["state"] = "disabled"
 
+
 def cycle_radio(_):
     if enable_editing.get():
         return
-    
+
     process_radio()
 
     current_selection = selected_radio.get()
     index = RADIO_BUTTON_NAMES.index(current_selection) + 1
     selected_radio.set(RADIO_BUTTON_NAMES[index % len(RADIO_BUTTON_NAMES)])
+
 
 def check_highlight(_):
     if enable_editing.get():
@@ -73,6 +89,7 @@ def check_highlight(_):
         txt_edit.tag_add("sel", "sel.first wordstart", "sel.last wordend")
     except tk.TclError:
         return
+
 
 def enable_text_edit():
     print(enable_editing.get())
@@ -105,19 +122,13 @@ label.grid(row=3, column=0, sticky="ew", padx=5, pady=5)
 # radio buttons
 radio_buttons: dict[str, tk.Radiobutton] = {}
 for index, name in enumerate(RADIO_BUTTON_NAMES):
-    r = tk.Radiobutton(
-        frm_buttons,
-        text=name,
-        value=name,
-        variable=selected_radio,
-        indicator = 0
-    )
-    r.grid(row=4+index, column=0, sticky="ew", padx=5)
+    r = tk.Radiobutton(frm_buttons, text=name, value=name, variable=selected_radio, indicator=0)
+    r.grid(row=4 + index, column=0, sticky="ew", padx=5)
     radio_buttons[name] = r
 selected_radio.set(RADIO_BUTTON_NAMES[0])
 
 btn_select = tk.Button(frm_buttons, text="Select", command=process_radio)
-btn_select.grid(row=index+5, column=0, sticky="ew", padx=5, pady=5)
+btn_select.grid(row=index + 5, column=0, sticky="ew", padx=5, pady=5)
 
 #### Center Column ####
 txt_edit_frame = tk.Frame(window)
@@ -126,7 +137,14 @@ txt_edit["state"] = "disabled"
 txt_edit.pack(fill=tk.BOTH, expand=True, padx=2, pady=2)
 
 enable_editing = tk.BooleanVar(value=False)
-txt_edit_enable_box = tk.Checkbutton(txt_edit_frame, text="Enable Editing", variable=enable_editing, onvalue=True, offvalue=False, command=enable_text_edit)
+txt_edit_enable_box = tk.Checkbutton(
+    txt_edit_frame,
+    text="Enable Editing",
+    variable=enable_editing,
+    onvalue=True,
+    offvalue=False,
+    command=enable_text_edit,
+)
 txt_edit_enable_box.pack()
 
 #### Right Column ####
@@ -142,24 +160,24 @@ for index, name in enumerate(RADIO_BUTTON_NAMES):
     text_fields[name] = text_field
 
 btn_parse = tk.Button(frm_items, text="Parse", command=parse_to_json)
-btn_parse.grid(row=index+1, column=0, sticky="n", columnspan=2)
+btn_parse.grid(row=index + 1, column=0, sticky="n", columnspan=2)
 
 result_label = ttk.Label(frm_items, text="Current Result")
-result_label.grid(row=index+2, column=0, sticky="w", columnspan=2)
+result_label.grid(row=index + 2, column=0, sticky="w", columnspan=2)
 
 result_text = tk.Text(frm_items)
 result_text["state"] = "disabled"
-result_text.grid(row=index+3, column=0, sticky="nsew", columnspan=2)
+result_text.grid(row=index + 3, column=0, sticky="nsew", columnspan=2)
 
 btn_save = tk.Button(frm_items, text="Save As...", command=save_file)
-btn_save.grid(row=index+4, column=0, sticky="n", padx=5, columnspan=2)
+btn_save.grid(row=index + 4, column=0, sticky="n", padx=5, columnspan=2)
 
 frm_buttons.grid(row=0, column=0, sticky="ns")
 txt_edit_frame.grid(row=0, column=1, sticky="nswe")
 frm_items.grid(row=0, column=2, sticky="ns")
 
-txt_edit.bind('<space>', cycle_radio)
-txt_edit.bind('<Return>', parse_to_json)
-txt_edit.bind('<ButtonRelease>', check_highlight)
+txt_edit.bind("<space>", cycle_radio)
+txt_edit.bind("<Return>", parse_to_json)
+txt_edit.bind("<ButtonRelease>", check_highlight)
 
 window.mainloop()
