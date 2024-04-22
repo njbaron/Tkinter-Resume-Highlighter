@@ -2,7 +2,12 @@
     "name": "Nick Parker",
     "address": "123 Somewhere Road, Niceville, FL",
     "email": "nickparker@email.com",
-    "job": "Social Media Marketing Associate",
-    "start_date": "2017",
-    "end_date": "2020"
+    "job_title": "Social Media Marketing Associate",
+    "company_name": "ABC Company",
+    "work_start_date": "2017",
+    "work_end_date": "2020",
+    "degree": "",
+    "school": "University of Michigan",
+    "edu_start_date": "2006",
+    "edu_end_date": "2010"
 }

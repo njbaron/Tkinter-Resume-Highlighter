@@ -3,6 +3,8 @@ from tkinter import ttk
 import json
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 
+RADIO_BUTTON_NAMES = ["name", "address", "email", "job title", "company name", "work start date", "work end date", "degree", "school", "edu start date", "edu end date"]
+
 def open_file():
     """Open a file for editing."""
     filepath = askopenfilename(
@@ -53,18 +55,17 @@ def parse_to_json(*args, **kwargs):
     result_text.insert(tk.END, json.dumps(text_dict, indent=4))
     result_text["state"] = "disabled"
 
-def cycle_radio(event):
+def cycle_radio(_):
     if enable_editing.get():
         return
     
     process_radio()
 
-    print(event)
     current_selection = selected_radio.get()
-    index = button_names.index(current_selection) + 1
-    selected_radio.set(button_names[index % len(button_names)])
+    index = RADIO_BUTTON_NAMES.index(current_selection) + 1
+    selected_radio.set(RADIO_BUTTON_NAMES[index % len(RADIO_BUTTON_NAMES)])
 
-def check_highlight(event):
+def check_highlight(_):
     if enable_editing.get():
         return
 
@@ -91,15 +92,11 @@ window.columnconfigure(2, minsize=400, weight=1)
 #### Right Column ####
 frm_buttons = tk.Frame(window, relief=tk.RAISED, bd=2)
 btn_open = tk.Button(frm_buttons, text="Open", command=open_file)
-btn_save = tk.Button(frm_buttons, text="Save As...", command=save_file)
 
 btn_open.grid(row=0, column=0, sticky="ew", padx=5, pady=5)
-btn_save.grid(row=1, column=0, sticky="ew", padx=5)
 
 
 selected_radio = tk.StringVar()
-
-button_names = ["name", "address", "email", "job", "start date", "end date"]
 
 # label
 label = ttk.Label(frm_buttons, text="What are you selecting?")
@@ -107,7 +104,7 @@ label.grid(row=3, column=0, sticky="ew", padx=5, pady=5)
 
 # radio buttons
 radio_buttons: dict[str, tk.Radiobutton] = {}
-for index, name in enumerate(button_names):
+for index, name in enumerate(RADIO_BUTTON_NAMES):
     r = tk.Radiobutton(
         frm_buttons,
         text=name,
@@ -117,7 +114,7 @@ for index, name in enumerate(button_names):
     )
     r.grid(row=4+index, column=0, sticky="ew", padx=5)
     radio_buttons[name] = r
-selected_radio.set(button_names[0])
+selected_radio.set(RADIO_BUTTON_NAMES[0])
 
 btn_select = tk.Button(frm_buttons, text="Select", command=process_radio)
 btn_select.grid(row=index+5, column=0, sticky="ew", padx=5, pady=5)
@@ -137,7 +134,7 @@ frm_items = tk.Frame(window, relief=tk.RAISED, bd=2)
 
 text_fields: dict[str, tk.Text] = {}
 
-for index, name in enumerate(button_names):
+for index, name in enumerate(RADIO_BUTTON_NAMES):
     label_thing = tk.Label(frm_items, text=name)
     label_thing.grid(row=index, column=0, sticky="ew")
     text_field = tk.Text(frm_items, height=2)
@@ -153,6 +150,9 @@ result_label.grid(row=index+2, column=0, sticky="w", columnspan=2)
 result_text = tk.Text(frm_items)
 result_text["state"] = "disabled"
 result_text.grid(row=index+3, column=0, sticky="nsew", columnspan=2)
+
+btn_save = tk.Button(frm_items, text="Save As...", command=save_file)
+btn_save.grid(row=index+4, column=0, sticky="n", padx=5, columnspan=2)
 
 frm_buttons.grid(row=0, column=0, sticky="ns")
 txt_edit_frame.grid(row=0, column=1, sticky="nswe")
